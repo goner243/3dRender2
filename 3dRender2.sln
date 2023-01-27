@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30413.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3dRender2", "3dRender2\3dRender2.csproj", "{70763239-F2A1-4087-B6FB-9FBC8A7197BF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70763239-F2A1-4087-B6FB-9FBC8A7197BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70763239-F2A1-4087-B6FB-9FBC8A7197BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70763239-F2A1-4087-B6FB-9FBC8A7197BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70763239-F2A1-4087-B6FB-9FBC8A7197BF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0510279F-48FA-4C66-AE92-3F0AEC05C651}
+	EndGlobalSection
+EndGlobal
