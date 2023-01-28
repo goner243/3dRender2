@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,23 +21,24 @@ namespace _3dRender2
 
             sw.Start();
 
+            ConcurrentBag<Hex> hexBag = new ConcurrentBag<Hex>();
+
             Parallel.For(0, normals.Count, v =>
             {
                 var hex = CalculateHex(triIndexes, v, normals, triangles);
 
-                lock (hexes)
+                if (hex != null)
                 {
-                    hexes.Add(hex);
+                    hexBag.Add(hex);
                 }
-
             });
 
+            hexes = hexBag.ToList();
             sw.Stop();
         }
 
         public Hex CalculateHex(List<int> triIndexes, int v, List<Vector3D> normals, List<int> triangles)
         {
-            List<int> hexTri = new List<int>();
             List<int> triInd = new List<int>();
             List<Vector3D> hexNorm = new List<Vector3D>();
 
@@ -49,17 +51,15 @@ namespace _3dRender2
                 hexNorm.Add(vert);
             }
 
-            hexTri = Enumerable.Range(0, hexNorm.Count).ToList();
-
-            if (hexTri.Count >= 5)
+            if (hexNorm.Count < 5)
             {
-                var tris = CreateHexTriangles(hexTri, hexNorm);
-
-                Hex hex = new Hex(hexNorm, tris, normals[v], 1);
-                return hex;
+                return null;
             }
 
-            return null;
+            var tris = CreateHexTriangles(hexNorm);
+
+            Hex hex = new Hex(hexNorm, tris, normals[v], 1);
+            return hex;
         }
 
         public Vector3D GetCentroid(Vector3D v0, Vector3D v1, Vector3D v2)
@@ -67,11 +67,13 @@ namespace _3dRender2
             return (v0 + v1 + v2) / 2;
         }
 
-        public List<int> CreateHexTriangles(List<int> triangles, List<Vector3D> hexNorm)
+        public List<int> CreateHexTriangles(List<Vector3D> hexNorm)
         {
             Vector3D side1;
             Vector3D side2;
             Vector3D perp;
+
+            List<int> triangles = Enumerable.Range(0, hexNorm.Count).ToList();
 
             List<int> tris = new List<int>();
 
@@ -260,6 +262,8 @@ namespace _3dRender2
         public Vector3D mainPoint;
 
         public List<Vector3D> Normals { get; set; }
+
+        public List<Point3D> Vericies { get; set; }
         public List<int> Tris { get; set; }
 
         public float multipliyer { get; set; }
@@ -274,6 +278,13 @@ namespace _3dRender2
             Tris = tris;
             multipliyer = mult;
             mainPoint = point;
+
+            Vericies = new List<Point3D>();
+
+            foreach(var norm in Normals)
+            {
+                Vericies.Add(new Point3D(norm.X, norm.Y, norm.Z));
+            }
         }
     }
 }

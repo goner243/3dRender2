@@ -181,7 +181,7 @@ namespace _3dRender2
 
         private void CreateHexaSphere(object sender, RoutedEventArgs e)
         {
-            GeosphereGenerator sphereX = new GeosphereGenerator(6);
+            GeosphereGenerator sphereX = new GeosphereGenerator(5);
 
             HexasphereGenerator sphere = new HexasphereGenerator();
             sphere.CreateGoldberg(sphereX.normals, sphereX.triangles);
@@ -208,36 +208,79 @@ namespace _3dRender2
 
             sw.Start();
 
-            for (int j = 0; j < hexes.Length; j++)
+            //for (int j = 0; j < hexes.Length; j++)
+            //{
+            //    MeshGeometry3D myMeshGeometry3D = new MeshGeometry3D();
+
+            //    Vector3DCollection myNormalCollection = new Vector3DCollection();
+            //    Point3DCollection myPositionCollection = new Point3DCollection();
+
+            //    foreach (var verts in hexes[j].Normals)
+            //    {
+            //        myNormalCollection.Add(verts);
+            //        myPositionCollection.Add(new Point3D(verts.X, verts.Y, verts.Z));
+            //    }
+
+            //    myMeshGeometry3D.Normals = myNormalCollection;
+
+            //    myMeshGeometry3D.Positions = myPositionCollection;
+
+            //    Int32Collection myTriangleIndicesCollection = new Int32Collection();
+
+            //    foreach (var triangle in hexes[j].Tris)
+            //    {
+            //        myTriangleIndicesCollection.Add(triangle);
+            //    }
+
+            //    myMeshGeometry3D.TriangleIndices = myTriangleIndicesCollection;                
+
+            //    Material material = new DiffuseMaterial(
+            //                    new SolidColorBrush(Colors.Black)); ;
+
+            //    if (switcher)
+            //    {
+            //        material = new DiffuseMaterial(
+            //                    new SolidColorBrush(Colors.BlueViolet)); 
+            //    }
+
+            //    switcher = !switcher;
+
+            //    GeometryModel3D model = new GeometryModel3D(
+            //        myMeshGeometry3D, material);
+
+            //    myGeometryModel.Geometry = myMeshGeometry3D;
+
+            //    myModel3DGroup.Children.Add(model);
+
+            //    myModel3DGroup.Children.Add(myGeometryModel);
+
+            //    //Color c = Colors.Yellow;
+            //    //double width = .5;
+
+            //    //wireframeSphere.Thickness = width;
+            //    //wireframeSphere.Color = c;
+
+            //    //for (int i = 0; i < hex.Tris.Count - 1; i += 3)
+            //    //{
+            //    //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i]].X, hex.Normals[hex.Tris[i]].Y, hex.Normals[hex.Tris[i]].Z));
+            //    //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i + 1]].X, hex.Normals[hex.Tris[i + 1]].Y, hex.Normals[hex.Tris[i + 1]].Z));
+
+            //    //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i]].X, hex.Normals[hex.Tris[i]].Y, hex.Normals[hex.Tris[i]].Z));
+            //    //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i + 2]].X, hex.Normals[hex.Tris[i + 2]].Y, hex.Normals[hex.Tris[i + 2]].Z));
+
+            //    //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i + 1]].X, hex.Normals[hex.Tris[i + 1]].Y, hex.Normals[hex.Tris[i + 1]].Z));
+            //    //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i + 2]].X, hex.Normals[hex.Tris[i + 2]].Y, hex.Normals[hex.Tris[i + 2]].Z));
+            //    //}
+
+            //}
+
+            foreach (var figure in hexes)
             {
-                MeshGeometry3D myMeshGeometry3D = new MeshGeometry3D();
+                var mesh = new MeshGeometry3D();
+                mesh.Positions = new Point3DCollection(figure.Vericies);
+                mesh.TriangleIndices = new Int32Collection(figure.Tris);
+                mesh.Normals = new Vector3DCollection(figure.Normals);
 
-                Vector3DCollection myNormalCollection = new Vector3DCollection();
-
-                foreach (var verts in hexes[j].Normals)
-                {
-                    myNormalCollection.Add(verts);
-                }
-
-                myMeshGeometry3D.Normals = myNormalCollection;
-
-                Point3DCollection myPositionCollection = new Point3DCollection();
-
-                foreach (var verts in hexes[j].Normals)
-                {
-                    myPositionCollection.Add(new Point3D(verts.X, verts.Y, verts.Z));
-                }
-
-                myMeshGeometry3D.Positions = myPositionCollection;
-
-                Int32Collection myTriangleIndicesCollection = new Int32Collection();
-
-                foreach (var triangle in hexes[j].Tris)
-                {
-                    myTriangleIndicesCollection.Add(triangle);
-                }
-
-                myMeshGeometry3D.TriangleIndices = myTriangleIndicesCollection;                
 
                 Material material = new DiffuseMaterial(
                                 new SolidColorBrush(Colors.Black)); ;
@@ -245,43 +288,19 @@ namespace _3dRender2
                 if (switcher)
                 {
                     material = new DiffuseMaterial(
-                                new SolidColorBrush(Colors.BlueViolet)); 
+                                new SolidColorBrush(Colors.BlueViolet));
                 }
 
                 switcher = !switcher;
 
-                GeometryModel3D model = new GeometryModel3D(
-                    myMeshGeometry3D, material);
-
-                myGeometryModel.Geometry = myMeshGeometry3D;
-
+                //var material = new DiffuseMaterial(new SolidColorBrush(Colors.Blue));
+                var model = new GeometryModel3D(mesh, material);
                 myModel3DGroup.Children.Add(model);
-
-                myModel3DGroup.Children.Add(myGeometryModel);
-
-                //Color c = Colors.Yellow;
-                //double width = .5;
-
-                //wireframeSphere.Thickness = width;
-                //wireframeSphere.Color = c;
-
-                //for (int i = 0; i < hex.Tris.Count - 1; i += 3)
-                //{
-                //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i]].X, hex.Normals[hex.Tris[i]].Y, hex.Normals[hex.Tris[i]].Z));
-                //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i + 1]].X, hex.Normals[hex.Tris[i + 1]].Y, hex.Normals[hex.Tris[i + 1]].Z));
-
-                //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i]].X, hex.Normals[hex.Tris[i]].Y, hex.Normals[hex.Tris[i]].Z));
-                //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i + 2]].X, hex.Normals[hex.Tris[i + 2]].Y, hex.Normals[hex.Tris[i + 2]].Z));
-
-                //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i + 1]].X, hex.Normals[hex.Tris[i + 1]].Y, hex.Normals[hex.Tris[i + 1]].Z));
-                //    wireframeSphere.Points.Add(new Point3D(hex.Normals[hex.Tris[i + 2]].X, hex.Normals[hex.Tris[i + 2]].Y, hex.Normals[hex.Tris[i + 2]].Z));
-                //}
-
             }
 
             sw.Stop();
 
-            //myViewport3D.Children.Add(wireframeSphere);
+            ////myViewport3D.Children.Add(wireframeSphere);
 
             myModelVisual3D.Content = myModel3DGroup;
 
