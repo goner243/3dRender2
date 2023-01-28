@@ -69,19 +69,24 @@ namespace _3dRender2
 
         public List<int> CreateHexTriangles(List<Vector3D> hexNorm)
         {
-            Vector3D side1;
-            Vector3D side2;
-            Vector3D perp;
-
-            List<int> triangles = Enumerable.Range(0, hexNorm.Count).ToList();
+            List<int> normalIndexes = new List<int>();
 
             List<int> tris = new List<int>();
 
-            int triCount = triangles.Count;
+            int normCount = hexNorm.Count;
 
-            int first = triangles[2];
+            if (normCount == 5)
+            {
+                normalIndexes = new List<int>() { 0, 1, 2, 3, 4 };
+            }
+            else
+            {
+                normalIndexes = new List<int>() { 0, 1, 2, 3, 4, 5 };
+            }
 
-            triangles.RemoveAt(2);
+            int first = normalIndexes[2];
+
+            normalIndexes.RemoveAt(2);
 
             int min1 = 1000000;
             int min2 = 1000000;
@@ -89,7 +94,7 @@ namespace _3dRender2
             double minDist1 = 1000000;
             double minDist2 = 1000000;
 
-            foreach (var tri in triangles)
+            foreach (var tri in normalIndexes)
             {
                 var dist = Vector3D.Subtract(hexNorm[first], hexNorm[tri]).Length;
                 if (dist < minDist1 || dist < minDist2)
@@ -107,150 +112,72 @@ namespace _3dRender2
                 }
             }
 
-            side1 = hexNorm[min1] - hexNorm[first];
-            side2 = hexNorm[min2] - hexNorm[first];
+            tris.AddRange(GetTriangleIndices(hexNorm, first, min1, min2));
 
-            perp = Vector3D.CrossProduct(side1, side2);
-            perp = Normalize(perp);
+            normalIndexes.Remove(min1);
+            normalIndexes.Remove(min2);
 
-            if (Vector3D.Subtract((hexNorm[first] + hexNorm[min1] + hexNorm[min2]) / 3, perp).Length > 1)
+            int min3 = GetMinDistance(hexNorm, normalIndexes, min1);
+            tris.AddRange(GetTriangleIndices(hexNorm, min1, min2, min3));
+
+            normalIndexes.Remove(min3);
+
+            if (normCount == 6)
             {
-                tris.Add(first);
-                tris.Add(min2);
-                tris.Add(min1);
+                int min4 = GetMinDistance(hexNorm, normalIndexes, min2);
+                tris.AddRange(GetTriangleIndices(hexNorm, min2, min3, min4));
+
+                normalIndexes.Remove(min4);
+
+                int last = normalIndexes[0];
+                tris.AddRange(GetTriangleIndices(hexNorm, last, min3, min4));
             }
             else
             {
-                tris.Add(first);
-                tris.Add(min1);
-                tris.Add(min2);
+                int last = normalIndexes[0];
+                tris.AddRange(GetTriangleIndices(hexNorm, last, min2, min3));
             }
-
-            triangles.Remove(min1);
-            triangles.Remove(min2);
-
-            int min3 = 1000000;
-
-            double minDist3 = 1000000;
-
-            foreach (var tri in triangles)
-            {
-                var dist = Vector3D.Subtract(hexNorm[min1], hexNorm[tri]).Length;
-                if (dist < minDist3)
-                {
-                    minDist3 = dist;
-                    min3 = tri;
-                }
-            }
-
-            side1 = hexNorm[min1] - hexNorm[min2];
-            side2 = hexNorm[min1] - hexNorm[min3];
-            perp = Vector3D.CrossProduct(side1, side2);
-            perp.Normalize();
-
-            if (Vector3D.Subtract((hexNorm[min3] + hexNorm[min1] + hexNorm[min2]) / 3, perp).Length > 1)
-            {
-                tris.Add(min1);
-                tris.Add(min3);
-                tris.Add(min2);
-            }
-            else
-            {
-                tris.Add(min1);
-                tris.Add(min2);
-                tris.Add(min3);
-            }
-
-            triangles.Remove(min3);
-
-            if (triCount == 6)
-            {
-                int min4 = 1000000;
-
-                double minDist4 = 1000000;
-
-                foreach (var tri in triangles)
-                {
-                    var dist = Vector3D.Subtract(hexNorm[min2], hexNorm[tri]).Length;
-                    if (dist < minDist4)
-                    {
-                        minDist4 = dist;
-                        min4 = tri;
-                    }
-                }
-
-                side1 = hexNorm[min2] - hexNorm[min4];
-                side2 = hexNorm[min2] - hexNorm[min3];
-                perp = Vector3D.CrossProduct(side1, side2);
-                perp.Normalize();
-
-                if (Vector3D.Subtract((hexNorm[min4] + hexNorm[min3] + hexNorm[min2]) / 3, perp).Length > 1)
-                {
-                    tris.Add(min2);
-                    tris.Add(min3);
-                    tris.Add(min4);
-
-                }
-                else
-                {
-                    tris.Add(min2);
-                    tris.Add(min4);
-                    tris.Add(min3);
-                }
-
-                triangles.Remove(min4);
-
-
-                int last = triangles[0];
-
-                side1 = hexNorm[last] - hexNorm[min4];
-                side2 = hexNorm[last] - hexNorm[min3];
-                perp = Vector3D.CrossProduct(side1, side2);
-                perp.Normalize();
-
-                if (Vector3D.Subtract((hexNorm[min4] + hexNorm[min3] + hexNorm[min3]) / 3, perp).Length > 1)
-                {
-                    tris.Add(last);
-                    tris.Add(min3);
-                    tris.Add(min4);
-
-                }
-                else
-                {
-                    tris.Add(last);
-                    tris.Add(min4);
-                    tris.Add(min3);
-                }
-            }
-            else
-            {
-                int last = triangles[0];
-
-                side1 = hexNorm[last] - hexNorm[min2];
-                side2 = hexNorm[last] - hexNorm[min3];
-                perp = Vector3D.CrossProduct(side1, side2);
-                perp.Normalize();
-
-                if (Vector3D.Subtract((hexNorm[min2] + hexNorm[min3] + hexNorm[last]) / 3, perp).Length > 1)
-                {
-                    tris.Add(last);
-                    tris.Add(min3);
-                    tris.Add(min2);
-                }
-                else
-                {
-                    tris.Add(last);
-                    tris.Add(min2);
-                    tris.Add(min3);
-                }
-            }
-
-            tris.AddRange(tris);
 
             return tris;
         }
 
-        public static Vector3D Normalize(Vector3D v1)
+        private List<int> GetTriangleIndices(List<Vector3D> hexNorm, int first, int second, int third)
+        {
+            Vector3D side1 = hexNorm[second] - hexNorm[first];
+            Vector3D side2 = hexNorm[third] - hexNorm[first];
+            Vector3D perp = Vector3D.CrossProduct(side1, side2);
+            perp = Normalize(perp);
+
+            if (Vector3D.Subtract((hexNorm[first] + hexNorm[second] + hexNorm[third]) / 3, perp).Length > 1)
+            {
+                return new List<int> { first, third, second };
+            }
+            else
+            {
+                return new List<int> { first, second, third };
+            }
+        }
+
+        public int GetMinDistance(List<Vector3D> hexNorm, List<int> triangles, int triangleIndex)
+        {
+            int min = 1000000;
+
+            double minDist = 1000000;
+
+            foreach (var tri in triangles)
+            {
+                var dist = Vector3D.Subtract(hexNorm[triangleIndex], hexNorm[tri]).Length;
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    min = tri;
+                }
+            }
+
+            return min;
+        }
+
+        public Vector3D Normalize(Vector3D v1)
         {
             double x = double.Parse(Math.Sqrt(v1.X * v1.X + v1.Y * v1.Y + v1.Z * v1.Z).ToString());
             return new Vector3D(v1.X / x, v1.Y / x, v1.Z / x);
@@ -281,7 +208,7 @@ namespace _3dRender2
 
             Vericies = new List<Point3D>();
 
-            foreach(var norm in Normals)
+            foreach (var norm in Normals)
             {
                 Vericies.Add(new Point3D(norm.X, norm.Y, norm.Z));
             }

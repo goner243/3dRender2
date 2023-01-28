@@ -181,7 +181,7 @@ namespace _3dRender2
 
         private void CreateHexaSphere(object sender, RoutedEventArgs e)
         {
-            GeosphereGenerator sphereX = new GeosphereGenerator(5);
+            GeosphereGenerator sphereX = new GeosphereGenerator(7);
 
             HexasphereGenerator sphere = new HexasphereGenerator();
             sphere.CreateGoldberg(sphereX.normals, sphereX.triangles);
